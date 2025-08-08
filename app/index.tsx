@@ -15,6 +15,7 @@ const Home = async () => {
 
   useEffect(()=>{
     setLoggedIn(isLoggedIn)
+    console.log("Logged In res : ", isLoggedIn)
   }, [isLoggedIn])
 
   return (

@@ -28,7 +28,7 @@ export interface SellerDataCreate {
   password: string;
 }
 
-const apiUrl = process.env.NEXT_PUBLIC_NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_SERVER_API : process.env.NEXT_PUBLIC_LOCAL_HOST_API
+const apiUrl = process.env.NODE_ENV === 'production' ? process.env.SERVER_API : process.env. LOCAL_HOST_API
 
 // Create seller profile
 export const createSellerProfile = async (formData: SellerDataCreate) => {
@@ -88,10 +88,10 @@ interface FormData {
 // Login seller
 export const loginSeller = async (formData: FormData) => {
     console.log("FORM DATA : ", formData)
-    console.log("REACHED")
+    console.log("REACHED", apiUrl)
 
     try {
-        const response = await fetch(`${apiUrl}/seller/login`, {
+        const response = await fetch(`http://192.168.1.103:5000/api/v1/seller/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

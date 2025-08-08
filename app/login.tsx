@@ -37,7 +37,8 @@ export default function Login() {
             if (!data.success) {
                 setError(true)
             }
-            if (data.accessToken) {
+            if (data.data.accessToken) {
+                console.log("yeah buddy logged in", data.data)
                 await AsyncStorage.setItem('isLoggedIn', 'true');
                 setIsLoggedIn(true)
                 await AsyncStorage.setItem('sellerInfo', JSON.stringify(data.data));
