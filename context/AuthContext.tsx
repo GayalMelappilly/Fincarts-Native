@@ -2,80 +2,122 @@
 
 import { createContext, useContext, useState } from "react";
 
+// Type definitions
 interface BusinessInfo {
-    businessName: string;
-    businessType: string;
-    legalBusinessName: string;
-    displayName: string;
-    storeDescription: string;
-    logoUrl: string;
-    websiteUrl: string;
-    gstin: string;
-    status: string;
+  businessName: string;
+  businessType: string;
+  legalBusinessName: string;
+  displayName: string;
+  storeDescription: string;
+  logoUrl: string;
+  websiteUrl: string;
+  gstin: string;
+  status: string;
 }
 
 interface ContactInfo {
-    email: string;
-    phone: string;
-    alternatePhone: string;
+  email: string;
+  phone: string;
+  alternatePhone: string;
 }
 
 interface Location {
-    city: string | undefined;
-    state: string | undefined;
-    country: string | undefined;
-    pinCode: string | undefined;
+  city: string | undefined;
+  state: string | undefined;
+  country: string | undefined;
+  pinCode: string | undefined;
 }
 
 interface Address {
-    addressLine1: string;
-    addressLine2: string;
-    landmark: string;
-    addressType: string;
-    location: Location;
+  addressLine1: string;
+  addressLine2: string;
+  landmark: string;
+  addressType: string;
+  location: Location;
 }
 
 interface Metrics {
-    totalSales: number;
-    totalOrders: number;
-    avgRating: number;
-    totalListings: number;
-    activeListings: number;
-    lastCalculatedAt: Date;
+  totalSales: number;
+  totalOrders: number;
+  avgRating: number;
+  totalListings: number;
+  activeListings: number;
+  lastCalculatedAt: Date;
 }
 
 interface Settings {
-    autoAcceptOrders: boolean;
-    defaultWarrantyPeriod: number;
-    returnWindow: number;
-    shippingProvider: string | null;
-    minOrderValue: number;
+  autoAcceptOrders: boolean;
+  defaultWarrantyPeriod: number;
+  returnWindow: number;
+  shippingProvider: string | null;
+  minOrderValue: number;
 }
 
 interface PaymentSettings {
-    paymentCycle: string;
-    minPayoutAmount: number;
+  paymentCycle: string;
+  minPayoutAmount: number;
 }
 
 interface SalesHistory {
-    dailySales: number;
-    orderCount: number;
-    newCustomers: number;
-    cancellations: number;
+  dailySales: number;
+  orderCount: number;
+  newCustomers: number;
+  cancellations: number;
+  date: string;
+}
+
+interface RecentOrder {
+  id: string;
+  orderId: string;
+  customer: string;
+  amount: number;
+  status: string;
+  date: string;
+}
+
+interface TopSellingProduct {
+  id: string;
+  name: string;
+  image: string;
+  sold: number;
+  stock: number;
+}
+
+interface TopFishListing {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  stock: number;
+  images: string[];
+  isFeatured: boolean;
+  viewCount: number;
+  reviewCount: number;
+  createdAt: string;
+}
+
+interface SalesChartData {
+  month: string;
+  sales: number;
 }
 
 interface Business {
-    id: string;
-    businessInfo: BusinessInfo;
-    contactInfo: ContactInfo;
-    address: Address;
-    metrics: Metrics;
-    settings: Settings[];
-    paymentSettings: PaymentSettings[];
-    recentSales: SalesHistory[]; 
-    commissionRate: number;
-    createdAt: Date;
-    updatedAt: Date;
+  id: string;
+  businessInfo: BusinessInfo;
+  contactInfo: ContactInfo;
+  address: Address;
+  metrics: Metrics;
+  settings: Settings;
+  paymentSettings: PaymentSettings;
+  recentSales: SalesHistory[];
+  recentOrders: RecentOrder[];
+  topSellingProducts: TopSellingProduct[];
+  topFishListings: TopFishListing[];
+  salesChartData: SalesChartData[];
+  commissionRate: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 type AuthContextType = {

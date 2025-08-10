@@ -41,6 +41,7 @@ export default function Login() {
                 console.log("yeah buddy logged in", data.data)
                 await AsyncStorage.setItem('isLoggedIn', 'true');
                 setIsLoggedIn(true)
+                await AsyncStorage.setItem('sellerId', JSON.stringify(data.data.id))
                 await AsyncStorage.setItem('sellerInfo', JSON.stringify(data.data));
             }
         },

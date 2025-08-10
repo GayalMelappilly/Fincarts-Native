@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
 
-const Home = async () => {
+const Home = () => {
   console.log("Rendering index page")
 
   const [loggedIn, setLoggedIn] = useState<boolean>(false)
@@ -22,6 +22,7 @@ const Home = async () => {
     <View className="items-center flex-1 justify-center">
       {loggedIn ? <DashboardScreen/> : <Login/>}
       {/* <Login /> */}
+      {/* <DashboardScreen /> */}
     </View>
   );
 };

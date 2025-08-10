@@ -3,12 +3,15 @@ import { useState } from "react";
 import { MaterialIcons, MaterialCommunityIcons, Ionicons, Feather } from '@expo/vector-icons';
 import { router } from "expo-router"
 import { useFooterElement } from "@/context/FooterContext";
+import { useAuth } from "@/context/AuthContext";
 
 const Footer = () => {
     
     const {activeElement, setActiveElement} = useFooterElement()
 
-    const footerItems = [
+    const { isLoggedIn } = useAuth()
+
+    const footerItems = isLoggedIn ? [
         {
             id: "dashboard",
             label: "Dashboard",
@@ -33,7 +36,7 @@ const Footer = () => {
             icon: (color:string) => <Ionicons name="person" size={24} color={color} />,
             router: '/profile'
         }
-    ];
+    ] : [];
 
     return (
         <View className="flex-row bg-white border-t border-gray-200 py-2">
