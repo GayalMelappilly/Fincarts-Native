@@ -16,6 +16,11 @@ const Home = () => {
   useEffect(()=>{
     setLoggedIn(isLoggedIn)
     console.log("Logged In res : ", isLoggedIn)
+    const sellerData = async () => {
+      const data = await AsyncStorage.getItem('sellerInfo')
+      console.log("DATA : ",data)
+    }
+    sellerData()
   }, [isLoggedIn])
 
   return (

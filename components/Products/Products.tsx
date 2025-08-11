@@ -48,14 +48,14 @@ const ProductsScreen = () => {
                         title="My Products"
                         description="View and manage your product catalog"
                         icon="layers-outline"
-                        onPress={() => router.push('/products')}
+                        onPress={() => router.push('/view-products')}
                     />
 
                     <MenuCard
                         title="Add Product"
                         description="Create a new product in your inventory"
                         icon="add-circle-outline"
-                        onPress={() => router.push('/addProducts')}
+                        onPress={() => router.push('/add-products')}
                     />
 
                     <MenuCard

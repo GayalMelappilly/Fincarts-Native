@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -29,7 +29,17 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<boolean>(false);
 
-    const {setIsLoggedIn} = useAuth()
+    const { setIsLoggedIn } = useAuth()
+
+    useEffect(() => {
+        const sellerData = async () => {
+            const data = await AsyncStorage.getItem('sellerInfo')
+            if(data){
+                setIsLoggedIn(true)
+            }
+        }
+        sellerData()
+    }, [])
 
     const mutation = useMutation({
         mutationFn: loginSeller,
@@ -181,8 +191,8 @@ export default function Login() {
                                 onPress={handleLogin}
                                 disabled={isLoading}
                                 className={`w-full py-3 px-4 rounded-xl flex-row items-center justify-center space-x-2 ${isLoading
-                                        ? 'bg-gray-400 opacity-50'
-                                        : 'bg-blue-600 active:bg-blue-700'
+                                    ? 'bg-gray-400 opacity-50'
+                                    : 'bg-blue-600 active:bg-blue-700'
                                     }`}
                                 style={{
                                     backgroundColor: isLoading ? '#9ca3af' : '#2563eb',

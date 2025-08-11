@@ -104,7 +104,7 @@ interface TopSellingProduct {
   stock: number;
 }
 
-interface TopFishListing {
+export interface TopFishListing {
   id: string;
   name: string;
   description: string;
