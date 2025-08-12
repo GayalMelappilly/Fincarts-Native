@@ -1,5 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 export interface SellerDataCreate {
   business_name: string;
   business_type: string;
@@ -30,10 +28,8 @@ export interface SellerDataCreate {
   password: string;
 }
 
-import Config from 'react-native-config';
 
-
-const apiUrl = Config.NODE_ENV === 'production' ? Config.SERVER_API : Config.LOCAL_HOST_API
+const apiUrl = process.env.NODE_ENV === 'production' ? process.env.EXPO_PUBLIC_SERVER_API : process.env.EXPO_PUBLIC_LOCAL_HOST_API
 
 // Create seller profile
 export const createSellerProfile = async (formData: SellerDataCreate) => {
@@ -69,7 +65,7 @@ export const createSellerProfile = async (formData: SellerDataCreate) => {
 export const getSellerDetails = async (id: string) => {
 
     try {
-        const response = await fetch(`http://192.168.1.101:5000/api/v1/seller/native/get-current-seller/${id}`, {
+        const response = await fetch(`${apiUrl}/seller/native/get-current-seller/${id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -100,7 +96,7 @@ export const loginSeller = async (formData: FormData) => {
     console.log("REACHED", apiUrl)
 
     try {
-        const response = await fetch(`http://192.168.1.101:5000/api/v1/seller/native/login`, {
+        const response = await fetch(`${apiUrl}/seller/native/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -184,7 +180,7 @@ export const logoutSeller = async (token: string) => {
     console.log("Logout seller", token, apiUrl)
 
     try {
-        const response = await fetch(`http://192.168.1.101:5000/api/v1/seller/native/logout`, {
+        const response = await fetch(`${apiUrl}/seller/native/logout`, {
              method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
