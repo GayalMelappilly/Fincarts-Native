@@ -1,51 +1,7 @@
-// {
-//   "expo": {
-//     "name": "my-new-app",
-//     "slug": "my-new-app",
-//     "version": "1.0.0",
-//     "orientation": "portrait",
-//     "icon": "./assets/images/icon.png",
-//     "scheme": "mynewapp",
-//     "userInterfaceStyle": "automatic",
-//     "newArchEnabled": true,
-//     "ios": {
-//       "supportsTablet": true
-//     },
-//     "android": {
-//       "adaptiveIcon": {
-//         "foregroundImage": "./assets/images/adaptive-icon.png",
-//         "backgroundColor": "#ffffff"
-//       },
-//       "edgeToEdgeEnabled": true
-//     },
-//     "web": {
-//       "bundler": "metro",
-//       "output": "static",
-//       "favicon": "./assets/images/favicon.png"
-//     },
-//     "plugins": [
-//       "expo-router",
-//       [
-//         "expo-splash-screen",
-//         {
-//           "image": "./assets/images/splash-icon.png",
-//           "imageWidth": 200,
-//           "resizeMode": "contain",
-//           "backgroundColor": "#ffffff"
-//         }
-//       ]
-//     ],
-//     "experiments": {
-//       "typedRoutes": true
-//     }
-//   }
-// }
-
-
 {
   "expo": {
-    "name": "my-new-app",
-    "slug": "my-new-app",
+    "name": "Fincarts",
+    "slug": "Fincarts",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -65,12 +21,18 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.gayalmelappilly.mynewapp"
     },
     "web": {
       "favicon": "./assets/images/favicon.png",
       "bundler": "metro"
     },
-    "sdkVersion": "53.0.0"
+    "sdkVersion": "53.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "5c2063de-a4f9-41d7-82a4-c86a1b682ae5"
+      }
+    }
   }
 }

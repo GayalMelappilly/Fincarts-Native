@@ -38,6 +38,7 @@ export default function Login() {
                 setIsLoggedIn(true)
             }
         }
+        console.log("ENVS : ",process.env.EXPO_PUBLIC_NODE_ENV,process.env.EXPO_PUBLIC_SERVER_API,process.env.EXPO_PUBLIC_LOCAL_HOST_API)
         sellerData()
     }, [])
 
