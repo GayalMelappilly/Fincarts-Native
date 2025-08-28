@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, SafeAreaView, Dimensions, ActivityIndicator } from 'react-native';
 import { Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import Footer from '@/components/Footer/Footer';
 import { LogOut } from 'lucide-react-native';
@@ -163,9 +163,10 @@ export default function SellerProfileScreen() {
 
     if (!sellerData) {
         return (
-            <SafeAreaView className="flex-1 bg-gray-50 items-center justify-center">
-                <Text className="text-gray-500">Loading profile...</Text>
-            </SafeAreaView>
+            <SafeAreaView className="flex-1 w-full bg-gray-50 justify-center items-center">
+                  <ActivityIndicator size="large" color="#3B82F6" />
+                  <Text className="mt-2 text-gray-600">Loading profile...</Text>
+                </SafeAreaView>
         );
     }
 

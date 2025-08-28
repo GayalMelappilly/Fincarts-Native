@@ -5,6 +5,7 @@ import { FooterElementProvider, useFooterElement } from "@/context/FooterContext
 import Footer from "@/components/Footer/Footer";
 import { StatusBar, View } from "react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
 import { AuthProvider } from "@/context/AuthContext";
 
 SplashScreen.preventAutoHideAsync();
@@ -43,6 +44,7 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <StatusBar barStyle="default" />
+          <Toast />
           <FooterUpdater />
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="index" options={{ headerShown: false }} />
