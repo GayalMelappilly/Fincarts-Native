@@ -324,20 +324,20 @@ const DashboardScreen = () => {
   }, [topSellingProducts]);
 
   if (isLoading) return (
-    <SafeAreaView className="flex-1 bg-gray-50 justify-center items-center">
+    <SafeAreaView className="flex-1 w-full bg-gray-50 justify-center items-center">
       <ActivityIndicator size="large" color="#3B82F6" />
       <Text className="mt-2 text-gray-600">Loading dashboard...</Text>
     </SafeAreaView>
   );
 
   if (error) return (
-    <SafeAreaView className="flex-1 bg-gray-50 justify-center items-center">
+    <SafeAreaView className="flex-1 w-full bg-gray-50 justify-center items-center">
       <Text className="text-red-600">Error: {(error as Error).message}</Text>
     </SafeAreaView>
   );
 
   if (!typedSellerData) return (
-    <SafeAreaView className="flex-1 bg-gray-50 justify-center items-center">
+    <SafeAreaView className="flex-1 w-full bg-gray-50 justify-center items-center">
       <Text className="text-gray-600">No data available</Text>
     </SafeAreaView>
   );

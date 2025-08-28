@@ -7,10 +7,14 @@ import {
     TouchableOpacity,
     Image,
     TextInput,
+    ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/context/AuthContext';
 import { router } from 'expo-router';
+import { useMutation } from '@tanstack/react-query';
+import { deleteProduct } from '@/services/productServices';
+import Toast from 'react-native-toast-message';
 
 export interface TopFishListing {
     id: string;
@@ -29,14 +33,45 @@ export interface TopFishListing {
 const ViewProductsScreen = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [loading, setLoading] = useState<boolean>(false)
     const itemsPerPage = 5;
     const [products, setProducts] = useState<TopFishListing[]>()
 
-    const { sellerData } = useAuth()
+    const { setSellerData, sellerData } = useAuth()
 
     useEffect(() => {
         setProducts(sellerData?.topFishListings)
     }, [sellerData])
+
+    const deleteMutation = useMutation({
+        mutationFn: deleteProduct,
+        onSuccess: (data) => {
+            console.log('Deleted res data : ', data)
+            if (!sellerData) return; // safeguard if sellerData is null
+
+            setSellerData({
+                ...sellerData,
+                topFishListings: sellerData.topFishListings.filter(
+                    (fish) => fish.id !== data.id
+                ),
+            });
+            setLoading(false)
+            Toast.show({
+                type: "success",
+                text1: "Fish removed successfully"
+            });
+            console.log(data);
+        },
+        onError: (err) => {
+            console.log("Delete product error : ", err);
+        },
+    });
+
+
+    const HandleDeleteProduct = (id: string) => {
+        setLoading(true)
+        deleteMutation.mutate(id)
+    }
 
     const filteredProducts = products?.filter((product: TopFishListing) =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -179,28 +214,32 @@ const ViewProductsScreen = () => {
                             </View>
 
                             {/* Stats and Date */}
-                            {/* <View className="flex-row items-center justify-between mb-4">
+                            <View className="flex-row items-center justify-between mb-4">
                                 <Text className="text-xs text-gray-500">
                                     Listed on: {formatDate(product.createdAt)}
                                 </Text>
                                 <View className="flex-row justify-end space-x-2 gap-2">
-                                    <TouchableOpacity className="bg-gray-50 p-2.5 rounded-lg border border-gray-200">
-                                        <Ionicons name="eye" size={18} color="#6B7280" />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity className="bg-blue-50 p-2.5 rounded-lg border border-blue-200">
-                                        <Ionicons name="create-outline" size={18} color="#2563EB" />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity className="bg-red-50 p-2.5 rounded-lg border border-red-200">
-                                        <Ionicons name="trash-outline" size={18} color="#DC2626" />
+                                    <TouchableOpacity onPress={() => HandleDeleteProduct(product.id)} className="bg-red-50 p-2.5 rounded-lg border border-red-200 flex-row gap-2">
+                                        <Ionicons name="trash" size={18} color="#d12a2a" />
+                                        <Text>Delete</Text>
                                     </TouchableOpacity>
                                 </View>
-                            </View> */}
+                            </View>
                         </View>
                     </View>
                 </View>
             </View>
         );
     };
+
+    if (loading) {
+        return (
+            <SafeAreaView className="flex-1 w-full bg-gray-50 justify-center items-center">
+                <ActivityIndicator size="large" color="#3B82F6" />
+                <Text className="mt-2 text-gray-600">Deleting product...</Text>
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView className="flex-1 bg-gray-50">
@@ -344,18 +383,6 @@ const ViewProductsScreen = () => {
                     )}
                 </View>
             </ScrollView>
-
-            {/* Enhanced Add Product Button */}
-            <View className="px-6 my-1 py-3 bg-white border-t border-gray-100">
-                <TouchableOpacity onPress={() => router.push('/add-products?viewStatus=add')} className="bg-blue-600 py-4 rounded-lg items-center shadow-lg">
-                    <View className="flex-row items-center">
-                        <Ionicons name="add-circle" size={24} color="white" />
-                        <Text className="text-white font-bold text-lg ml-2">
-                            Add New Product
-                        </Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
         </SafeAreaView>
     );
 };

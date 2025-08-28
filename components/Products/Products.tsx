@@ -3,6 +3,7 @@ import { View, Text, Pressable, StatusBar, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import Footer from '@/components/Footer/Footer';
+import { useAuth } from '@/context/AuthContext';
 
 interface MenuCardProps {
     title: string;
@@ -36,6 +37,9 @@ const MenuCard: React.FC<MenuCardProps> = ({
 );
 
 const ProductsScreen = () => {
+
+    const {sellerData} = useAuth()
+
     return (
         <SafeAreaView className="flex-1 bg-gray-50 w-full">
             <View className="flex-1 px-5 py-8">
@@ -62,31 +66,31 @@ const ProductsScreen = () => {
                         title="Edit Product"
                         description="Make changes to existing products"
                         icon="create-outline"
-                        onPress={() => router.push('/products')}
+                        onPress={() => router.push('/edit-products')}
                     />
 
                     <MenuCard
                         title="Delete Product"
                         description="Remove products from your inventory"
                         icon="trash-outline"
-                        onPress={() => router.push('/products')}
+                        onPress={() => router.push('/delete-products')}
                     />
                 </View>
 
                 <View className="bg-white rounded-xl p-5 shadow-sm" style={{ elevation: 2 }}>
                     <View className="flex-row justify-between">
                         <View className="items-center">
-                            <Text className="text-2xl font-bold text-gray-900">42</Text>
+                            <Text className="text-2xl font-bold text-gray-900">{sellerData?.topFishListings.length}</Text>
                             <Text className="text-gray-500 text-xs">Total Products</Text>
                         </View>
                         <View className="h-full w-px bg-gray-200" />
                         <View className="items-center">
-                            <Text className="text-2xl font-bold text-gray-900">7</Text>
+                            <Text className="text-2xl font-bold text-gray-900">{new Set(sellerData?.topFishListings.map(fish => fish.category)).size}</Text>
                             <Text className="text-gray-500 text-xs">Categories</Text>
                         </View>
                         <View className="h-full w-px bg-gray-200" />
                         <View className="items-center">
-                            <Text className="text-2xl font-bold text-gray-900">5</Text>
+                            <Text className="text-2xl font-bold text-gray-900 text">{sellerData?.topFishListings.filter(fish => fish.stock < 5).length}</Text>
                             <Text className="text-gray-500 text-xs">Low Stock</Text>
                         </View>
                     </View>

@@ -83,18 +83,27 @@ interface TopSellingProduct {
   stock: number;
 }
 
-interface TopFishListing {
+export interface TopFishListing {
   id: string;
   name: string;
   description: string;
   price: number;
   category: string;
+  quantityAvailable: number;
+  age: string;
+  breed: string;
+  color: string;
+  size: string;
   stock: number;
+  listingStatus: "active" | "draft" | "out_of_stock";
+  careInstructions: Record<string, string>;
+  dietaryRequirements: Record<string, string>;
   images: string[];
   isFeatured: boolean;
   viewCount: number;
   reviewCount: number;
   createdAt: string;
+  updatedAt: string;
 }
 
 interface SalesChartData {
@@ -102,7 +111,7 @@ interface SalesChartData {
   sales: number;
 }
 
-interface Business {
+export interface Business {
   id: string;
   businessInfo: BusinessInfo;
   contactInfo: ContactInfo;
@@ -122,7 +131,7 @@ interface Business {
 
 type AuthContextType = {
     sellerData: Business | null,
-    setSellerData: (sellerData: Business | null) => void;
+    setSellerData: React.Dispatch<React.SetStateAction<Business | null>>;
     isLoggedIn: boolean;
     setIsLoggedIn: (isLoggedIn: boolean) => void;
     profileUrl: string | null;

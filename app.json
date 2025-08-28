@@ -22,7 +22,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.gayalmelappilly.Fincarts"
+      "package": "com.gayalmelappilly.mynewapp"
     },
     "web": {
       "favicon": "./assets/images/favicon.png",
@@ -31,7 +31,7 @@
     "sdkVersion": "53.0.0",
     "extra": {
       "eas": {
-        "projectId": "ec035cbf-227c-420a-a1b5-6d58c0f42f35"
+        "projectId": "5c2063de-a4f9-41d7-82a4-c86a1b682ae5"
       }
     }
   }

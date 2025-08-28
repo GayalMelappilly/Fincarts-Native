@@ -179,22 +179,17 @@ const ViewProductsScreen = () => {
                             </View>
 
                             {/* Stats and Date */}
-                            {/* <View className="flex-row items-center justify-between mb-4">
+                            <View className="flex-row items-center justify-between mb-4">
                                 <Text className="text-xs text-gray-500">
                                     Listed on: {formatDate(product.createdAt)}
                                 </Text>
                                 <View className="flex-row justify-end space-x-2 gap-2">
-                                    <TouchableOpacity className="bg-gray-50 p-2.5 rounded-lg border border-gray-200">
-                                        <Ionicons name="eye" size={18} color="#6B7280" />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity className="bg-blue-50 p-2.5 rounded-lg border border-blue-200">
+                                    <TouchableOpacity onPress={() => router.push(`/add-products?viewStatus=edit&id=${product.id}`)} className="bg-blue-50 p-2.5 rounded-lg border border-blue-200 flex-row gap-2">
                                         <Ionicons name="create-outline" size={18} color="#2563EB" />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity className="bg-red-50 p-2.5 rounded-lg border border-red-200">
-                                        <Ionicons name="trash-outline" size={18} color="#DC2626" />
+                                        <Text>Edit Product</Text>
                                     </TouchableOpacity>
                                 </View>
-                            </View> */}
+                            </View>
                         </View>
                     </View>
                 </View>
@@ -344,18 +339,6 @@ const ViewProductsScreen = () => {
                     )}
                 </View>
             </ScrollView>
-
-            {/* Enhanced Add Product Button */}
-            <View className="px-6 my-1 py-3 bg-white border-t border-gray-100">
-                <TouchableOpacity onPress={() => router.push('/add-products?viewStatus=add')} className="bg-blue-600 py-4 rounded-lg items-center shadow-lg">
-                    <View className="flex-row items-center">
-                        <Ionicons name="add-circle" size={24} color="white" />
-                        <Text className="text-white font-bold text-lg ml-2">
-                            Add New Product
-                        </Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
         </SafeAreaView>
     );
 };

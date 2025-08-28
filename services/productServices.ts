@@ -1,89 +1,113 @@
-// // Add product
-// export const addProduct = async (productData: FishProduct) => {
+import { TopFishListing } from "@/context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
-//     console.log("Product details : ",productData)
+const apiUrl = process.env.EXPO_PUBLIC_NODE_ENV === 'production' ? process.env.EXPO_PUBLIC_SERVER_API : process.env.EXPO_PUBLIC_LOCAL_HOST_API
+
+// Add product
+export const addProduct = async (productData: TopFishListing) => {
+
+    const sellerInfo = await AsyncStorage.getItem('sellerInfo');
+    const sellerData = sellerInfo ? JSON.parse(sellerInfo) : null;
+    const sellerId = sellerData?.id as string;
 
 
-//     const accessToken = localStorage.getItem('sellerAccessToken') as string
-//     try {
-//         const response = await fetchWithAuth(`${apiUrl}/seller/product/add-product`, {
-//             method: 'POST',
-//             body: JSON.stringify(productData)
-//         },accessToken, 'seller')
+    console.log("Product details : ", productData, sellerId)
 
-//         console.log("RESPONSE : ",response)
+    try {
+        const response = await fetch(`${apiUrl}/seller/native/product/add-product`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productData, sellerId: sellerId },)
+        })
 
-//         const data = await response
+        console.log("RESPONSE : ", response)
 
-//         console.log("DATA : ",data)
+        const data = await response.json()
 
-//         if (!data.success) {
-//             throw new Error('Failed to fetch user profile');
-//         }
-//         return data;
+        console.log("DATA : ", data)
 
-//     } catch (error) {
-//         console.error('Error add new fish to the list : ', error);
-//         throw error;
-//     }
+        if (!data.success) {
+            throw new Error('Failed to add product');
+        }
+        return data;
 
-// }
+    } catch (error) {
+        console.error('Error add new fish to the list : ', error);
+        throw error;
+    }
+
+}
 
 // // Edit product
-// export const editProduct = async (productData: FishProduct) => {
+export const editProduct = async (productData: TopFishListing) => {
 
-//     console.log("Product details : ",productData)
-//     const accessToken = localStorage.getItem('sellerAccessToken') as string
+    console.log("Product details : ",productData)
+    const sellerInfo = await AsyncStorage.getItem('sellerInfo');
+    const sellerData = sellerInfo ? JSON.parse(sellerInfo) : null;
+    const sellerId = sellerData?.id as string;
 
-//     try {
-//         const response = await fetchWithAuth(`${apiUrl}/seller/product/edit-product/${productData.id}`, {
-//             method: 'PUT',
-//             body: JSON.stringify(productData)
-//         },accessToken, 'seller')
+    try {
+        const response = await fetch(`${apiUrl}/seller/native/product/edit-product/${productData.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({productData, sellerId: sellerId})
+        })
 
-//         console.log("RESPONSE : ",response)
+        console.log("RESPONSE : ",response)
 
-//         const data = await response
+        const data = await response.json()
 
-//         console.log("DATA : ",data)
+        console.log("DATA : ",data)
 
-//         if (!data.success) {
-//             throw new Error('Product edit error');
-//         }
-//         return data;
+        if (!data.success) {
+            throw new Error('Product edit error');
+        }
+        return data;
 
-//     } catch (error) {
-//         console.error('Error edit fish : ', error);
-//         throw error;
-//     }
+    } catch (error) {
+        console.error('Error edit fish : ', error);
+        throw error;
+    }
 
-// }
+}
 
 // // Delete product
-// export const deleteProduct = async (productId: string) => {
-//     const accessToken = localStorage.getItem('sellerAccessToken') as string
+export const deleteProduct = async (productId: string) => {
 
-//     try {
-//         const response = await fetchWithAuth(`${apiUrl}/seller/product/delete-product/${productId}`, {
-//             method: 'DELETE',
-//         },accessToken, 'seller')
+    console.log("Product id : ",productId)
+    const sellerInfo = await AsyncStorage.getItem('sellerInfo');
+    const sellerData = sellerInfo ? JSON.parse(sellerInfo) : null;
+    const sellerId = sellerData?.id as string;
 
-//         console.log("RESPONSE : ",response)
+    try {
+        const response = await fetch(`${apiUrl}/seller/native/product/delete-product/${productId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({sellerId})
+        })
 
-//         const data = await response
+        console.log("RESPONSE : ",response)
 
-//         console.log("DATA : ",data)
+        const data = await response.json()
 
-//         if (!data.success) {
-//             throw new Error('Product edit error');
-//         }
-//         return data;
+        console.log("DATA : ",data)
 
-//     } catch (error) {
-//         console.error('Error edit fish : ', error);
-//         throw error;
-//     }
-// }
+        if (!data.success) {
+            throw new Error('Product edit error');
+        }
+        return data;
+
+    } catch (error) {
+        console.error('Error edit fish : ', error);
+        throw error;
+    }
+}
 
 // // Get seller profile
 // export const getSellerProducts = async () => {

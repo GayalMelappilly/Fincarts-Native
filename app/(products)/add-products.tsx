@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Alert } from 'react-native';
 import AddProductScreen from '@/components/Products/AddProducts';
+import { TopFishListing, useAuth } from '@/context/AuthContext';
+import { useLocalSearchParams } from 'expo-router';
 
 // Import or define the FishProduct interface
 export interface FishProduct {
@@ -29,58 +31,143 @@ export type FishProductView = 'list' | 'add' | 'edit' | 'view';
 
 const AddProducts = () => {
   // State management for products
-  const [products, setProducts] = useState<FishProduct[]>([]);
-  const [editableProduct, setEditableProduct] = useState<FishProduct | null>(null);
+  const [products, setProducts] = useState<TopFishListing[]>([]);
+  const [editableProduct, setEditableProduct] = useState<TopFishListing | null>(null);
   const [view, setView] = useState<FishProductView>('add');
   const [loading, setLoading] = useState(false);
 
+  const { sellerData } = useAuth()
+
   // Mock categories data - replace with actual API call
   const [categories] = useState([
-    { id: 1, name: 'Tropical Fish' },
-    { id: 2, name: 'Goldfish' },
-    { id: 3, name: 'Angelfish' },
-    { id: 4, name: 'Betta Fish' },
-    { id: 5, name: 'Guppy' },
-    { id: 6, name: 'Tetra' },
-    { id: 7, name: 'Cichlid' },
-    { id: 8, name: 'Marine Fish' },
-    { id: 9, name: 'Koi Fish' },
-    { id: 10, name: 'Catfish' },
+    { id: 1, name: "Freshwater Fish" },
+    { id: 2, name: "Saltwater Fish" },
+    { id: 3, name: "Tropical Fish" },
+    { id: 4, name: "Cold Water Fish" },
+    { id: 5, name: "Game Fish" },
+    { id: 6, name: "Aquarium Fish" },
+    { id: 7, name: "Commercial Fish" },
+    { id: 8, name: "Endangered Fish" },
+    { id: 9, name: "Cichlids" },
+    { id: 10, name: "Tetras" },
+    { id: 11, name: "Gouramis" },
+    { id: 12, name: "Catfish" },
+    { id: 13, name: "Livebearers" },
+    { id: 14, name: "Barbs" },
+    { id: 15, name: "Rainbowfish" },
+    { id: 16, name: "Killifish" },
+    { id: 17, name: "Pufferfish" },
+    { id: 18, name: "Sturgeon" },
+    { id: 19, name: "Reef Fish" },
+    { id: 20, name: "Pelagic Fish" },
+    { id: 21, name: "Bottom Dwellers" },
+    { id: 22, name: "Sharks & Rays" },
+    { id: 23, name: "Eels" },
+    { id: 24, name: "Groupers" },
+    { id: 25, name: "Snappers" },
+    { id: 26, name: "Tuna" },
+    { id: 27, name: "Marlin" },
+    { id: 28, name: "Seahorses" },
+    { id: 29, name: "Angelfish" },
+    { id: 30, name: "Bettas" },
+    { id: 31, name: "Discus" },
+    { id: 32, name: "Guppies" },
+    { id: 33, name: "Mollies" },
+    { id: 34, name: "Platies" },
+    { id: 35, name: "Swordtails" },
+    { id: 36, name: "Rasboras" },
+    { id: 37, name: "Loaches" },
+    { id: 38, name: "Plecos" },
+    { id: 39, name: "Goldfish" },
+    { id: 40, name: "Koi" },
+    { id: 41, name: "Trout" },
+    { id: 42, name: "Salmon" },
+    { id: 43, name: "Whitefish" },
+    { id: 44, name: "Sticklebacks" },
+    { id: 45, name: "Bitterling" },
+    { id: 46, name: "African Cichlids" },
+    { id: 47, name: "South American Cichlids" },
+    { id: 48, name: "Dwarf Cichlids" },
+    { id: 49, name: "Oscars" },
+    { id: 50, name: "Clownfish" },
+    { id: 51, name: "Tangs" },
+    { id: 52, name: "Butterflyfish" },
+    { id: 53, name: "Angelfish (Marine)" },
+    { id: 54, name: "Wrasses" },
+    { id: 55, name: "Bass" },
+    { id: 56, name: "Trout (Game)" },
+    { id: 57, name: "Salmon (Game)" },
+    { id: 58, name: "Pike" },
+    { id: 59, name: "Tarpon" },
+    { id: 60, name: "Bonefish" },
+    { id: 61, name: 'Arowana' }
   ]);
+
+  const params = useLocalSearchParams()
 
   // Initialize a new product when component mounts
   useEffect(() => {
+    console.log("REACHED : ", view)
     if (!editableProduct && view === 'add') {
-      const newProduct: FishProduct = {
-        id: `fish_${Date.now()}`,
+      const newProduct = {
+        id: ``,
         name: '',
         description: '',
         price: 0,
-        quantity_available: 0,
-        category: null,
+        quantityAvailable: 0,
+        category: '',
         images: [],
-        is_featured: false,
-        listing_status: 'active',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        isFeatured: false,
+        listingStatus: 'active',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         age: '',
         size: '',
         color: '',
         breed: '',
-        care_instructions: {
+        careInstructions: {
           'Tank Size': '',
           'Water Temperature': '',
           'pH Level': '',
         },
-        dietary_requirements: {
+        dietaryRequirements: {
           'Food Type': '',
           'Feeding Frequency': '',
         },
-        view_count: 0,
+        viewCount: 0,
+        reviewCount: 0,
+        stock: 0
       };
-      setEditableProduct(newProduct);
+      setEditableProduct(newProduct as TopFishListing);
     }
-  }, [view, editableProduct]);
+    else if (view === 'edit') {
+      const fishDetails = sellerData?.topFishListings.find((item) => item.id === params.id as string)
+      console.log("The details of product to edit : ", fishDetails)
+      if (fishDetails) {
+        const newProduct = {
+          id: fishDetails.id,
+          name: fishDetails.name,
+          description: fishDetails.description,
+          price: fishDetails.price,
+          quantityAvailable: fishDetails.stock,
+          category: fishDetails.category,
+          images: fishDetails.images,
+          isFeatured: fishDetails.isFeatured,
+          listingStatus: fishDetails.listingStatus,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          age: fishDetails.age,
+          size: fishDetails.size,
+          color: fishDetails.color,
+          breed: fishDetails.breed,
+          careInstructions: fishDetails.careInstructions,
+          dietaryRequirements: fishDetails.dietaryRequirements,
+          viewCount: fishDetails.viewCount,
+        };
+        setEditableProduct(newProduct as TopFishListing);
+      }
+    }
+  }, [view]);
 
   // Mock refetch function - replace with actual API call
   const refetch = async () => {
@@ -88,10 +175,10 @@ const AddProducts = () => {
       setLoading(true);
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Here you would typically fetch updated products from your API
       console.log('Refetching products...');
-      
+
       setLoading(false);
     } catch (error) {
       console.error('Error refetching products:', error);
@@ -107,13 +194,13 @@ const AddProducts = () => {
   };
 
   // Handle product updates
-  const handleProductUpdate = (updatedProducts: FishProduct[]) => {
+  const handleProductUpdate = (updatedProducts: TopFishListing[]) => {
     setProducts(updatedProducts);
     console.log('Products updated:', updatedProducts);
   };
 
   // Handle editable product changes
-  const handleEditableProductChange = (product: FishProduct | null) => {
+  const handleEditableProductChange = (product: TopFishListing | null) => {
     setEditableProduct(product);
     if (product) {
       console.log('Editing product:', product);

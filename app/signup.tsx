@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 const Signup = () => {
   return (
-    <View className={styles.container}>
+    <View className="items-center flex-1 justify-center">
       <SignupScreen />
     </View>
   );
