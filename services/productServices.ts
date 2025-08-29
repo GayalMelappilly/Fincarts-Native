@@ -1,7 +1,7 @@
 import { TopFishListing } from "@/context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
-const apiUrl = process.env.EXPO_PUBLIC_NODE_ENV === 'production' ? process.env.EXPO_PUBLIC_SERVER_API : process.env.EXPO_PUBLIC_LOCAL_HOST_API
+const apiUrl = process.env.NODE_ENV === 'production' ? process.env.EXPO_PUBLIC_SERVER_API : process.env.EXPO_PUBLIC_LOCAL_HOST_API
 
 // Add product
 export const addProduct = async (productData: TopFishListing) => {

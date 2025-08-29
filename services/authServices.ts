@@ -29,7 +29,7 @@ export interface SellerDataCreate {
 }
 
 
-const apiUrl = process.env.EXPO_PUBLIC_NODE_ENV === 'production' ? process.env.EXPO_PUBLIC_SERVER_API : process.env.EXPO_PUBLIC_LOCAL_HOST_API
+const apiUrl = process.env.NODE_ENV === 'production' ? process.env.EXPO_PUBLIC_SERVER_API : process.env.EXPO_PUBLIC_LOCAL_HOST_API
 
 // Create seller profile
 export const createSellerProfile = async (formData: SellerDataCreate) => {
