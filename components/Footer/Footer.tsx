@@ -1,5 +1,5 @@
 import { Text, TouchableOpacity, View } from "react-native"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MaterialIcons, MaterialCommunityIcons, Ionicons, Feather } from '@expo/vector-icons';
 import { router } from "expo-router"
 import { useFooterElement } from "@/context/FooterContext";
@@ -10,6 +10,10 @@ const Footer = () => {
     const {activeElement, setActiveElement} = useFooterElement()
 
     const { isLoggedIn } = useAuth()
+
+    useEffect(()=>{
+        console.log("Footer is logged in : ", isLoggedIn)
+    }, [isLoggedIn])
 
     const footerItems = isLoggedIn ? [
         {
@@ -40,7 +44,7 @@ const Footer = () => {
 
     return (
         <View className="flex-row bg-white border-t border-gray-200 py-2">
-            {footerItems.map((item) => {
+            {isLoggedIn && footerItems.map((item) => {
                 const isActive = item.id === activeElement;
                 const color = isActive ? "#4338ca" : "#666"; 
                 return (

@@ -75,9 +75,8 @@ export const getSellerDetails = async (id: string) => {
 
         const data = await response.json();
 
-        if (!data.success) {
-            throw new Error('Failed to fetch seller profile');
-        }
+        console.log("Get seller details : ", data)
+        
         return data;
     } catch (error) {
         console.error('Fetch seller profile error:', error);
@@ -93,7 +92,6 @@ interface FormData {
 // Login seller
 export const loginSeller = async (formData: FormData) => {
     console.log("FORM DATA : ", formData)
-    console.log("REACHED", apiUrl)
 
     try {
         const response = await fetch(`${apiUrl}/seller/native/login`, {
@@ -191,9 +189,11 @@ export const logoutSeller = async (token: string) => {
 
         const data = await response.json();
 
+        console.log("Logout response : ", data)
+
         return data;
     } catch (error) {
-        console.error('Fetch user profile error:', error);
+        console.error('Logout error:', error);
         throw error;
     }
 }

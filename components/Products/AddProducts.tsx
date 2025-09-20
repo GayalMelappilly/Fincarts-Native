@@ -17,34 +17,12 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { Video } from 'expo-av';
 import { uploadToCloudinary } from '@/utils/cloudinary/upload';
 import { useMutation } from '@tanstack/react-query';
 import { addProduct, editProduct } from '@/services/productServices';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Business, TopFishListing, useAuth } from '@/context/AuthContext';
-
-// Updated types based on fish_listings schema
-// export interface FishProduct {
-//   id: string;
-//   name: string;
-//   description: string;
-//   price: number;
-//   quantity_available: number;
-//   category: string | null;
-//   images: string[];
-//   is_featured: boolean;
-//   listing_status: 'active' | 'draft' | 'out_of_stock';
-//   created_at: string;
-//   updated_at: string;
-//   age?: string;
-//   size?: string;
-//   color?: string;
-//   breed?: string;
-//   care_instructions: Record<string, string>;
-//   dietary_requirements: Record<string, string>;
-//   view_count?: number;
-//   fish_categories?: { id: string, name: string };
-// }
 
 export type FishProductView = 'list' | 'add' | 'edit' | 'view';
 
@@ -60,7 +38,6 @@ interface Props {
   setLoading: (loading: boolean) => void;
 }
 
-// Move FormInputProps outside the component
 interface FormInputProps {
   label: string;
   value: string;
@@ -73,7 +50,6 @@ interface FormInputProps {
   leftIcon?: string;
 }
 
-// Move FormInput component outside and memoize it
 const FormInput: React.FC<FormInputProps> = React.memo(({
   label,
   value,
@@ -116,7 +92,6 @@ const FormInput: React.FC<FormInputProps> = React.memo(({
   </View>
 ));
 
-// Memoize CategoryModal component
 const CategoryModal: React.FC<{
   visible: boolean;
   onClose: () => void;
@@ -158,7 +133,6 @@ const CategoryModal: React.FC<{
   </Modal>
 ));
 
-// Memoize StatusModal component
 const StatusModal: React.FC<{
   visible: boolean;
   onClose: () => void;
@@ -224,18 +198,16 @@ const AddProductForm: React.FC<Props> = ({
   const [showStatusModal, setShowStatusModal] = useState<boolean>(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  const params = useLocalSearchParams()
+  const params = useLocalSearchParams();
   if (params.viewStatus === "add") {
-    setView('add')
+    setView('add');
   } else if (params.viewStatus === "edit") {
-    setView('edit')
+    setView('edit');
   }
 
-  const { sellerData, setSellerData } = useAuth()
-
+  const { sellerData, setSellerData } = useAuth();
   const screenWidth = Dimensions.get('window').width;
 
-  // Status options memoized
   const statusOptions = useMemo(() => [
     { value: 'active' as const, label: 'Active', color: '#10B981', icon: 'checkmark-circle' as const },
     { value: 'draft' as const, label: 'Draft', color: '#6B7280', icon: 'document-text' as const },
@@ -245,12 +217,12 @@ const AddProductForm: React.FC<Props> = ({
   const addMutation = useMutation({
     mutationFn: addProduct,
     onSuccess: (data) => {
-      console.log(data)
+      console.log(data);
     },
     onError: (err) => {
-      console.log('Add product error : ', err)
+      console.log('Add product error : ', err);
     }
-  })
+  });
 
   const editMutation = useMutation({
     mutationFn: editProduct,
@@ -275,8 +247,8 @@ const AddProductForm: React.FC<Props> = ({
     },
   });
 
-  // Helper function to convert image to base64
-  const convertImageToBase64 = useCallback(async (uri: string): Promise<string> => {
+  // Helper function to convert media to base64
+  const convertMediaToBase64 = useCallback(async (uri: string): Promise<string> => {
     try {
       const response = await fetch(uri);
       const blob = await response.blob();
@@ -288,17 +260,31 @@ const AddProductForm: React.FC<Props> = ({
         reader.readAsDataURL(blob);
       });
     } catch (error) {
-      console.error('Error converting image to base64:', error);
+      console.error('Error converting media to base64:', error);
       throw error;
     }
   }, []);
 
-  // Updated handleImageUpload function - MOVED BEFORE showImageSourceOptions
-  const handleImageUpload = useCallback(async (source: 'camera' | 'library' = 'library'): Promise<void> => {
+  // Helper function to determine if a URL is a video
+  const isVideoUrl = useCallback((url: string): boolean => {
+    return url.includes('/video/') || 
+           url.includes('.mp4') || 
+           url.includes('.mov') || 
+           url.includes('.avi') || 
+           url.includes('.webm') ||
+           url.includes('.mkv') ||
+           url.includes('.flv');
+  }, []);
+
+  // Updated media upload function that handles both images and videos
+  const handleMediaUpload = useCallback(async (
+    source: 'camera' | 'library' = 'library',
+    mediaType: 'image' | 'video' | 'both' = 'both'
+  ): Promise<void> => {
     if (!editableProduct) return;
 
     try {
-      // Request permissions first
+      // Request permissions
       const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
       const { status: libraryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -312,63 +298,96 @@ const AddProductForm: React.FC<Props> = ({
         return;
       }
 
+      // Set media types based on selection
+      let mediaTypes: ImagePicker.MediaTypeOptions;
+      if (mediaType === 'image') {
+        mediaTypes = ImagePicker.MediaTypeOptions.Images;
+      } else if (mediaType === 'video') {
+        mediaTypes = ImagePicker.MediaTypeOptions.Videos;
+      } else {
+        mediaTypes = ImagePicker.MediaTypeOptions.All;
+      }
+
       const result = source === 'camera'
         ? await ImagePicker.launchCameraAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [4, 3],
-          quality: 0.8,
-        })
+            mediaTypes,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.8,
+            videoMaxDuration: 60, // 60 seconds max for videos
+          })
         : await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [4, 3],
-          quality: 0.8,
-        });
+            mediaTypes,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.8,
+            videoMaxDuration: 60,
+          });
 
       if (!result.canceled && result.assets && result.assets[0]) {
         setUploading(true);
+        const asset = result.assets[0];
 
         try {
-          // Convert image to base64
-          const base64Image = await convertImageToBase64(result.assets[0].uri);
-          const url = await uploadToCloudinary(base64Image);
+          // Convert media to base64
+          const base64Media = await convertMediaToBase64(asset.uri);
+          
+          // Determine if it's a video or image based on the asset type
+          const isVideo = asset.type === 'video';
+          const fileType = isVideo ? 'video' : 'image';
+          
+          // Upload to Cloudinary with the appropriate type
+          const url = await uploadToCloudinary(base64Media, fileType);
 
           if (url) {
+            // Add to images array (you might want to separate videos later)
             setEditableProduct({
               ...editableProduct,
               images: [...editableProduct.images, url]
             });
-            Alert.alert('Success', 'Image uploaded successfully!');
+            
+            Alert.alert('Success', `${isVideo ? 'Video' : 'Image'} uploaded successfully!`);
           } else {
-            throw new Error('Failed to get image URL from server');
+            throw new Error('Failed to get media URL from server');
           }
         } catch (error) {
-          console.error('Error uploading image:', error);
-          Alert.alert('Upload Error', 'Failed to upload image. Please try again.');
+          console.error('Error uploading media:', error);
+          Alert.alert('Upload Error', `Failed to upload ${asset.type}. Please try again.`);
         }
       }
     } catch (error) {
-      console.error('Error selecting image:', error);
-      Alert.alert('Error', 'Failed to select image. Please try again.');
+      console.error('Error selecting media:', error);
+      Alert.alert('Error', 'Failed to select media. Please try again.');
     } finally {
       setUploading(false);
     }
-  }, [editableProduct, setEditableProduct, convertImageToBase64]);
+  }, [editableProduct, setEditableProduct, convertMediaToBase64]);
 
-  // Show image source options - NOW handleImageUpload is defined
-  const showImageSourceOptions = useCallback((): void => {
+  // Show media source and type options
+  const showMediaSourceOptions = useCallback((): void => {
     Alert.alert(
-      'Select Image Source',
-      'Choose how you want to add an image',
+      'Add Media',
+      'Choose media type and source',
       [
         {
-          text: 'Camera',
-          onPress: () => handleImageUpload('camera'),
+          text: 'Take Photo',
+          onPress: () => handleMediaUpload('camera', 'image'),
+        },
+        {
+          text: 'Record Video',
+          onPress: () => handleMediaUpload('camera', 'video'),
         },
         {
           text: 'Photo Library',
-          onPress: () => handleImageUpload('library'),
+          onPress: () => handleMediaUpload('library', 'image'),
+        },
+        {
+          text: 'Video Library',
+          onPress: () => handleMediaUpload('library', 'video'),
+        },
+        {
+          text: 'All Media',
+          onPress: () => handleMediaUpload('library', 'both'),
         },
         {
           text: 'Cancel',
@@ -377,7 +396,52 @@ const AddProductForm: React.FC<Props> = ({
       ],
       { cancelable: true }
     );
-  }, [handleImageUpload]);
+  }, [handleMediaUpload]);
+
+  // Media preview component
+  const renderMediaPreview = useCallback((mediaUrl: string, index: number) => {
+    const isVideo = isVideoUrl(mediaUrl);
+    
+    return (
+      <View key={`media-${index}`} className="w-1/3 p-1">
+        <View className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden">
+          {isVideo ? (
+            <View className="w-full h-full relative">
+              <Video
+                source={{ uri: mediaUrl }}
+                style={{ width: '100%', height: '100%' }}
+                // resizeMode="cover"
+                shouldPlay={false}
+                isLooping={false}
+                useNativeControls={false}
+              />
+              <View className="absolute inset-0 bg-black/20 items-center justify-center">
+                <View className="bg-white/80 rounded-full p-2">
+                  <Ionicons name="play" size={20} color="#374151" />
+                </View>
+              </View>
+            </View>
+          ) : (
+            <Image source={{ uri: mediaUrl }} className="w-full h-full" resizeMode="cover" />
+          )}
+          
+          <TouchableOpacity
+            onPress={() => handleRemoveImage(index)}
+            className="absolute top-2 right-2 bg-red-500 rounded-full p-1"
+          >
+            <Ionicons name="close" size={16} color="white" />
+          </TouchableOpacity>
+          
+          {/* Video indicator badge */}
+          {isVideo && (
+            <View className="absolute bottom-2 left-2 bg-black/70 rounded px-2 py-1">
+              <Text className="text-white text-xs font-medium">VIDEO</Text>
+            </View>
+          )}
+        </View>
+      </View>
+    );
+  }, [isVideoUrl]);
 
   // Validation function
   const validateForm = useCallback((): boolean => {
@@ -397,6 +461,9 @@ const AddProductForm: React.FC<Props> = ({
     }
     if (!editableProduct?.category) {
       errors.category = 'Category is required';
+    }
+    if (!editableProduct?.size) {
+      errors.size = 'Size is required';
     }
 
     setFormErrors(errors);
@@ -420,11 +487,11 @@ const AddProductForm: React.FC<Props> = ({
           setProducts([editableProduct]);
         }
         console.log('Product details : ', editableProduct);
-        addMutation.mutate(editableProduct)
+        addMutation.mutate(editableProduct);
         Alert.alert('Success', 'Product added successfully!');
       } else {
         setProducts([editableProduct]);
-        editMutation.mutate(editableProduct)
+        editMutation.mutate(editableProduct);
         Alert.alert('Success', 'Product updated successfully!');
       }
 
@@ -456,73 +523,7 @@ const AddProductForm: React.FC<Props> = ({
     }
   }, [editableProduct, formErrors, setEditableProduct]);
 
-  // Handle care instructions
-  const handleCareInstructionChange = useCallback((key: string, value: string): void => {
-    if (!editableProduct) return;
-    setEditableProduct({
-      ...editableProduct,
-      careInstructions: {
-        ...editableProduct.careInstructions,
-        [key]: value
-      }
-    });
-  }, [editableProduct, setEditableProduct]);
-
-  const addCareInstruction = useCallback((): void => {
-    if (!editableProduct) return;
-    setEditableProduct({
-      ...editableProduct,
-      careInstructions: {
-        ...editableProduct.careInstructions,
-        '': ''
-      }
-    });
-  }, [editableProduct, setEditableProduct]);
-
-  const removeCareInstruction = useCallback((key: string): void => {
-    if (!editableProduct) return;
-    const newInstructions = { ...editableProduct.careInstructions };
-    delete newInstructions[key];
-    setEditableProduct({
-      ...editableProduct,
-      careInstructions: newInstructions
-    });
-  }, [editableProduct, setEditableProduct]);
-
-  // Handle dietary requirements
-  const handleDietaryRequirementChange = useCallback((key: string, value: string): void => {
-    if (!editableProduct) return;
-    setEditableProduct({
-      ...editableProduct,
-      dietaryRequirements: {
-        ...editableProduct.dietaryRequirements,
-        [key]: value
-      }
-    });
-  }, [editableProduct, setEditableProduct]);
-
-  const addDietaryRequirement = useCallback((): void => {
-    if (!editableProduct) return;
-    setEditableProduct({
-      ...editableProduct,
-      dietaryRequirements: {
-        ...editableProduct.dietaryRequirements,
-        '': ''
-      }
-    });
-  }, [editableProduct, setEditableProduct]);
-
-  const removeDietaryRequirement = useCallback((key: string): void => {
-    if (!editableProduct) return;
-    const newRequirements = { ...editableProduct.dietaryRequirements };
-    delete newRequirements[key];
-    setEditableProduct({
-      ...editableProduct,
-      dietaryRequirements: newRequirements
-    });
-  }, [editableProduct, setEditableProduct]);
-
-  // Remove image
+  // Remove image/video
   const handleRemoveImage = useCallback((index: number): void => {
     if (!editableProduct) return;
     const newImages = [...editableProduct.images];
@@ -536,12 +537,12 @@ const AddProductForm: React.FC<Props> = ({
   // Navigation handlers
   const handleGoBack = useCallback(() => {
     setEditableProduct(null);
-    if(view == 'edit'){
-      setView('list')
-      router.push(`/edit-products`)
-    }else if(view == 'add'){
-      setView('list')
-      router.push(`/products`)
+    if (view == 'edit') {
+      setView('list');
+      router.push(`/edit-products`);
+    } else if (view == 'add') {
+      setView('list');
+      router.push(`/products`);
     }
   }, [setEditableProduct, setView]);
 
@@ -675,6 +676,17 @@ const AddProductForm: React.FC<Props> = ({
                 )}
               </View>
 
+              <View className="flex-1">
+                <FormInput
+                  label="Size"
+                  value={editableProduct?.size || ''}
+                  onChangeText={(text) => handleInputChange('size', text)}
+                  placeholder="e.g., 2 inches"
+                  required
+                  error={formErrors.size}
+                />
+              </View>
+
               {/* Status Selection */}
               <View className="mb-4">
                 <Text className="text-sm font-semibold text-gray-700 mb-2">Listing Status</Text>
@@ -721,86 +733,28 @@ const AddProductForm: React.FC<Props> = ({
               </View>
             </View>
 
-            {/* Fish Characteristics Section */}
-            <View className="bg-white rounded-2xl p-6 mb-6 border border-gray-100">
-              <View className="flex-row items-center mb-6">
-                <View className="bg-green-50 p-3 rounded-full mr-4">
-                  <Ionicons name="fish" size={24} color="#10B981" />
-                </View>
-                <Text className="text-xl font-bold text-gray-900">Fish Characteristics</Text>
-              </View>
-
-              <View className="flex-row space-x-4 mb-4 gap-2">
-                <View className="flex-1">
-                  <FormInput
-                    label="Breed/Species"
-                    value={editableProduct?.breed || ''}
-                    onChangeText={(text) => handleInputChange('breed', text)}
-                    placeholder="e.g., Angelfish"
-                  />
-                </View>
-                <View className="flex-1">
-                  <FormInput
-                    label="Age"
-                    value={editableProduct?.age || ''}
-                    onChangeText={(text) => handleInputChange('age', text)}
-                    placeholder="e.g., 6 months"
-                  />
-                </View>
-              </View>
-
-              <View className="flex-row space-x-4 gap-2">
-                <View className="flex-1">
-                  <FormInput
-                    label="Size"
-                    value={editableProduct?.size || ''}
-                    onChangeText={(text) => handleInputChange('size', text)}
-                    placeholder="e.g., 2 inches"
-                  />
-                </View>
-                <View className="flex-1">
-                  <FormInput
-                    label="Color"
-                    value={editableProduct?.color || ''}
-                    onChangeText={(text) => handleInputChange('color', text)}
-                    placeholder="e.g., Silver"
-                  />
-                </View>
-              </View>
-            </View>
-
-            {/* Images Section */}
+            {/* Media Section */}
             <View className="bg-white rounded-2xl p-6 mb-6 border border-gray-100">
               <View className="flex-row items-center justify-between mb-6">
                 <View className="flex-row items-center">
                   <View className="bg-purple-50 p-3 rounded-full mr-4">
-                    <Ionicons name="images" size={24} color="#8B5CF6" />
+                    <Ionicons name="videocam" size={24} color="#8B5CF6" />
                   </View>
-                  <Text className="text-xl font-bold text-gray-900">Fish Images</Text>
+                  <Text className="text-xl font-bold text-gray-900">Media Gallery</Text>
                 </View>
                 <TouchableOpacity
-                  onPress={showImageSourceOptions}
+                  onPress={showMediaSourceOptions}
                   className="bg-purple-50 px-4 py-2 rounded-xl"
                   disabled={uploading}
                 >
-                  <Text className="text-purple-700 font-semibold">Add Image</Text>
+                  <Text className="text-purple-700 font-semibold">Add Media</Text>
                 </TouchableOpacity>
               </View>
 
               <View className="flex-row flex-wrap">
-                {editableProduct?.images?.map((image, index) => (
-                  <View key={`image-${index}`} className="w-1/3 p-1">
-                    <View className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden">
-                      <Image source={{ uri: image }} className="w-full h-full" resizeMode="cover" />
-                      <TouchableOpacity
-                        onPress={() => handleRemoveImage(index)}
-                        className="absolute top-2 right-2 bg-red-500 rounded-full p-1"
-                      >
-                        <Ionicons name="close" size={16} color="white" />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                ))}
+                {editableProduct?.images?.map((mediaUrl, index) => 
+                  renderMediaPreview(mediaUrl, index)
+                )}
 
                 {uploading && (
                   <View className="w-1/3 p-1">
@@ -813,120 +767,20 @@ const AddProductForm: React.FC<Props> = ({
 
                 {(!editableProduct?.images || editableProduct.images.length < 6) && !uploading && (
                   <TouchableOpacity
-                    onPress={showImageSourceOptions}
+                    onPress={showMediaSourceOptions}
                     className="w-1/3 p-1"
                   >
                     <View className="aspect-square bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl items-center justify-center">
-                      <Ionicons name="camera" size={32} color="#9CA3AF" />
-                      <Text className="text-xs text-gray-500 mt-2">Add Image</Text>
+                      <Ionicons name="add-circle" size={32} color="#9CA3AF" />
+                      <Text className="text-xs text-gray-500 mt-2">Add Media</Text>
                     </View>
                   </TouchableOpacity>
                 )}
               </View>
 
               <Text className="text-xs text-gray-500 mt-4">
-                Upload high-quality images. First image will be the main display image.
+                Upload high-quality images and videos. First media will be the main display. Videos limited to 60 seconds.
               </Text>
-            </View>
-
-            {/* Care Instructions Section */}
-            <View className="bg-white rounded-2xl p-6 mb-6 border border-gray-100">
-              <View className="flex-row items-center justify-between mb-6">
-                <View className="flex-row items-center">
-                  <View className="bg-blue-50 p-3 rounded-full mr-4">
-                    <Ionicons name="medical" size={24} color="#2563EB" />
-                  </View>
-                  <Text className="text-xl font-bold text-gray-900">Care Instructions</Text>
-                </View>
-                <TouchableOpacity
-                  onPress={addCareInstruction}
-                  className="bg-blue-50 px-4 py-2 rounded-xl"
-                >
-                  <Text className="text-blue-700 font-semibold">Add</Text>
-                </TouchableOpacity>
-              </View>
-
-              {Object.entries(editableProduct?.careInstructions || {}).map(([key, value], index) => (
-                <View key={`care-${index}`} className="flex-row items-center mb-4 space-x-2 gap-2">
-                  <TextInput
-                    placeholder="Topic (e.g., Tank Size)"
-                    value={key}
-                    onChangeText={(newKey) => {
-                      if (!editableProduct) return;
-                      const newInstructions = { ...editableProduct.careInstructions };
-                      delete newInstructions[key];
-                      newInstructions[newKey] = value;
-                      setEditableProduct({
-                        ...editableProduct,
-                        careInstructions: newInstructions
-                      });
-                    }}
-                    className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
-                  />
-                  <TextInput
-                    placeholder="Instructions"
-                    value={value}
-                    onChangeText={(text) => handleCareInstructionChange(key, text)}
-                    className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
-                  />
-                  <TouchableOpacity
-                    onPress={() => removeCareInstruction(key)}
-                    className="bg-red-50 p-3 rounded-xl"
-                  >
-                    <Ionicons name="trash" size={18} color="#EF4444" />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-
-            {/* Dietary Requirements Section */}
-            <View className="bg-white rounded-2xl p-6 mb-6 border border-gray-100">
-              <View className="flex-row items-center justify-between mb-6">
-                <View className="flex-row items-center">
-                  <View className="bg-orange-50 p-3 rounded-full mr-4">
-                    <Ionicons name="restaurant" size={24} color="#EA580C" />
-                  </View>
-                  <Text className="text-xl font-bold text-gray-900">Dietary Requirements</Text>
-                </View>
-                <TouchableOpacity
-                  onPress={addDietaryRequirement}
-                  className="bg-orange-50 px-4 py-2 rounded-xl"
-                >
-                  <Text className="text-orange-700 font-semibold">Add</Text>
-                </TouchableOpacity>
-              </View>
-
-              {Object.entries(editableProduct?.dietaryRequirements || {}).map(([key, value], index) => (
-                <View key={`dietary-${index}`} className="flex-row items-center mb-4 space-x-2 gap-2">
-                  <TextInput
-                    placeholder="Type (e.g., Food Type)"
-                    value={key}
-                    onChangeText={(newKey) => {
-                      if (!editableProduct) return;
-                      const newRequirements = { ...editableProduct.dietaryRequirements };
-                      delete newRequirements[key];
-                      newRequirements[newKey] = value;
-                      setEditableProduct({
-                        ...editableProduct,
-                        dietaryRequirements: newRequirements
-                      });
-                    }}
-                    className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
-                  />
-                  <TextInput
-                    placeholder="Details"
-                    value={value}
-                    onChangeText={(text) => handleDietaryRequirementChange(key, text)}
-                    className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
-                  />
-                  <TouchableOpacity
-                    onPress={() => removeDietaryRequirement(key)}
-                    className="bg-red-50 p-3 rounded-xl"
-                  >
-                    <Ionicons name="trash" size={18} color="#EF4444" />
-                  </TouchableOpacity>
-                </View>
-              ))}
             </View>
           </View>
         </ScrollView>

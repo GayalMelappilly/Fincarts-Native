@@ -31,27 +31,15 @@ export default function Login() {
 
     const { setIsLoggedIn } = useAuth()
 
-    useEffect(() => {
-        const sellerData = async () => {
-            const data = await AsyncStorage.getItem('sellerInfo')
-            if(data){
-                setIsLoggedIn(true)
-            }
-        }
-        console.log("ENVS : ",process.env.NODE_ENV,process.env.EXPO_PUBLIC_SERVER_API,process.env.EXPO_PUBLIC_LOCAL_HOST_API)
-        sellerData()
-    }, [])
-
     const mutation = useMutation({
         mutationFn: loginSeller,
         onSuccess: async (data) => {
             if (!data.success) {
                 setError(true)
-            }
-            if (data.data.accessToken) {
+            }else{
                 console.log("yeah buddy logged in", data.data)
-                await AsyncStorage.setItem('isLoggedIn', 'true');
                 setIsLoggedIn(true)
+                await AsyncStorage.setItem('isLoggedIn', 'true');
                 await AsyncStorage.setItem('sellerId', JSON.stringify(data.data.id))
                 await AsyncStorage.setItem('sellerInfo', JSON.stringify(data.data));
             }

@@ -3,8 +3,6 @@ import { View, Text, Image, ScrollView, TouchableOpacity, SafeAreaView, Dimensio
 import { Feather, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import Footer from '@/components/Footer/Footer';
 import { LogOut } from 'lucide-react-native';
-import { useMutation } from '@tanstack/react-query';
-import { logoutSeller } from '@/services/authServices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '@/context/AuthContext';
 import { router } from 'expo-router';
@@ -100,7 +98,8 @@ const BusinessStatusBadge: React.FC<BusinessStatusBadgeProps> = ({ status }) => 
 export default function SellerProfileScreen() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<boolean>(false);
-    const { setIsLoggedIn, sellerData } = useAuth();
+
+    const { setIsLoggedIn, sellerData, setSellerData } = useAuth();
 
     const formatCurrency = (amount: string | number) => {
         return `₹${Number(amount).toLocaleString('en-IN')}`;
@@ -129,31 +128,15 @@ export default function SellerProfileScreen() {
         return <View className="flex-row">{stars}</View>;
     };
 
-    const mutation = useMutation({
-        mutationFn: logoutSeller,
-        onSuccess: async (data) => {
-            if (!data.success) {
-                setError(true);
-            } else {
-                console.log("Logged out");
-                await AsyncStorage.setItem('isLoggedIn', 'false');
-                setIsLoggedIn(false);
-                await AsyncStorage.removeItem('sellerInfo');
-                router.push('/');
-            }
-        },
-        onError: (err) => {
-            console.log('Seller logout error : ', err);
-        }
-    });
-
     const handleLogout = async () => {
         setIsLoading(true);
         setError(false);
         try {
-            const sellerInfoString = await AsyncStorage.getItem('sellerInfo');
-            const sellerInfo = JSON.parse(sellerInfoString as string);
-            mutation.mutate(sellerInfo.refreshToken);
+            console.log("Logged out");
+            await AsyncStorage.clear();
+            setIsLoggedIn(false);
+            setSellerData(null)
+            router.push('/');
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -164,9 +147,9 @@ export default function SellerProfileScreen() {
     if (!sellerData) {
         return (
             <SafeAreaView className="flex-1 w-full bg-gray-50 justify-center items-center">
-                  <ActivityIndicator size="large" color="#3B82F6" />
-                  <Text className="mt-2 text-gray-600">Loading profile...</Text>
-                </SafeAreaView>
+                <ActivityIndicator size="large" color="#3B82F6" />
+                <Text className="mt-2 text-gray-600">Loading profile...</Text>
+            </SafeAreaView>
         );
     }
 

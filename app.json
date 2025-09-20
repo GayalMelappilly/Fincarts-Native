@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Fincarts",
-    "slug": "Fincarts",
+    "slug": "my-new-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -33,6 +33,7 @@
       "eas": {
         "projectId": "5c2063de-a4f9-41d7-82a4-c86a1b682ae5"
       }
-    }
+    },
+    "owner": "gayalmelappilly"
   }
 }

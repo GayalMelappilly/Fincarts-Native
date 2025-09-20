@@ -143,43 +143,11 @@ interface Business {
 
 const DashboardScreen = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('Weekly');
-  const [sellerId, setSellerId] = useState('');
 
   const { sellerData, setSellerData } = useAuth();
 
   // Type guard to ensure sellerData is properly typed
   const typedSellerData = sellerData as Business | null;
-
-  useEffect(() => {
-    const loadSellerId = async () => {
-      try {
-        const idString = await AsyncStorage.getItem('sellerId');
-        if (idString) {
-          setSellerId(JSON.parse(idString));
-        }
-      } catch (error) {
-        console.error('Failed to load sellerId:', error);
-      }
-    };
-
-    loadSellerId();
-  }, []);
-
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['get-current-seller'],
-    queryFn: () => getSellerDetails(sellerId),
-    enabled: !!sellerId
-  });
-
-  useEffect(() => {
-    if (data) {
-      console.log("Res data : ", data.data);
-      if (data.success) {
-        setSellerData(data.data);
-      }
-      console.log(data?.data);
-    }
-  }, [data, setSellerData]);
 
   // Helper functions to format data
   const formatCurrency = (amount: string | number) => {
@@ -322,19 +290,6 @@ const DashboardScreen = () => {
       product.stock >= 10
     );
   }, [topSellingProducts]);
-
-  if (isLoading) return (
-    <SafeAreaView className="flex-1 w-full bg-gray-50 justify-center items-center">
-      <ActivityIndicator size="large" color="#3B82F6" />
-      <Text className="mt-2 text-gray-600">Loading dashboard...</Text>
-    </SafeAreaView>
-  );
-
-  if (error) return (
-    <SafeAreaView className="flex-1 w-full bg-gray-50 justify-center items-center">
-      <Text className="text-red-600">Error: {(error as Error).message}</Text>
-    </SafeAreaView>
-  );
 
   if (!typedSellerData) return (
     <SafeAreaView className="flex-1 w-full bg-gray-50 justify-center items-center">

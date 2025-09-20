@@ -8,10 +8,13 @@ import {
   StatusBar,
   Dimensions,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/context/AuthContext';
+import { useQuery } from '@tanstack/react-query';
+import { getOrders } from '@/services/orderServices';
 
 interface RecentOrder {
   id: string;
@@ -28,16 +31,27 @@ const OrdersScreen = () => {
   const [activeTab, setActiveTab] = useState('All');
   const [orders, setOrders] = useState<RecentOrder[]>()
 
-  const {sellerData} = useAuth()
+  const { sellerData } = useAuth()
 
-  useEffect(()=>{
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['get-orders'],
+    queryFn: () => getOrders(sellerData?.id as string),
+    enabled: !!sellerData?.id
+  });
+
+  useEffect(() => {
+    console.log('Orders : ',data)
+  }, [data])
+
+  useEffect(() => {
     setOrders(sellerData?.recentOrders)
+    console.log("Orders : ",sellerData?.recentOrders)
   }, [sellerData])
-  
+
   const tabs = ['All', 'Pending', 'Shipped', 'Delivered'];
-  
-  const filteredOrders = activeTab === 'All' 
-    ? orders 
+
+  const filteredOrders = activeTab === 'All'
+    ? orders
     : orders?.filter(order => order.status === activeTab);
 
   const getStatusColor = (status: string) => {
@@ -137,7 +151,7 @@ const OrdersScreen = () => {
             </View>
           </View>
         </View>
-        
+
         {/* Progress indicator */}
         <View style={{ height: 1, backgroundColor: '#E5E7EB', marginTop: 12 }} />
         <TouchableOpacity style={{ paddingTop: 12, alignItems: 'center' }}>
@@ -184,10 +198,10 @@ const OrdersScreen = () => {
 
         {/* Stats Cards */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 12 }}>
-          <View style={{ 
-            backgroundColor: 'rgba(255, 255, 255, 0.15)', 
-            flex: 1, 
-            padding: 16, 
+          <View style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.15)',
+            flex: 1,
+            padding: 16,
             borderRadius: 12,
             // backdropFilter: 'blur(10px)',
           }}>
@@ -196,10 +210,10 @@ const OrdersScreen = () => {
               ₹{orders?.reduce((sum, order) => sum + order.amount, 0).toFixed(2)}
             </Text>
           </View>
-          <View style={{ 
-            backgroundColor: 'rgba(255, 255, 255, 0.15)', 
-            flex: 1, 
-            padding: 16, 
+          <View style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.15)',
+            flex: 1,
+            padding: 16,
             borderRadius: 12,
           }}>
             <Text style={{ color: '#E0E7FF', fontSize: 12, marginBottom: 4 }}>Avg Order</Text>
@@ -211,32 +225,36 @@ const OrdersScreen = () => {
       </LinearGradient>
 
       {/* Tabs Section */}
-      <View style={{ 
-        paddingHorizontal: 20, 
-        paddingVertical: 20, 
-        backgroundColor: '#F9FAFB',
-        borderBottomWidth: 1,
-        borderBottomColor: '#E5E7EB'
-      }}>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
+      <View
+        style={{
+          paddingHorizontal: 20,
+          paddingVertical: 20,
+          backgroundColor: '#F9FAFB',
+          borderBottomWidth: 1,
+          borderBottomColor: '#E5E7EB',
+        }}
+      >
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ flexDirection: 'row', gap: 8 }}
+        >
           {tabs.map((tab) => (
             <TouchableOpacity
               key={tab}
               style={{
                 paddingVertical: 12,
-                paddingHorizontal: 20,
+                paddingHorizontal: 15,
                 borderRadius: 25,
                 backgroundColor: activeTab === tab ? '#6366F1' : '#FFFFFF',
                 borderWidth: 1,
                 borderColor: activeTab === tab ? '#6366F1' : '#E5E7EB',
                 shadowColor: activeTab === tab ? '#6366F1' : 'transparent',
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
+                shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: activeTab === tab ? 0.2 : 0,
                 shadowRadius: 4,
                 elevation: activeTab === tab ? 3 : 0,
+                marginRight: 8, // fallback for gap
               }}
               onPress={() => setActiveTab(tab)}
               activeOpacity={0.8}
@@ -252,17 +270,18 @@ const OrdersScreen = () => {
               </Text>
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
       </View>
+
     </View>
   );
 
   const renderEmptyState = () => (
-    <View style={{ 
-      alignItems: 'center', 
-      justifyContent: 'center', 
+    <View style={{
+      alignItems: 'center',
+      justifyContent: 'center',
       paddingVertical: 80,
-      paddingHorizontal: 40 
+      paddingHorizontal: 40
     }}>
       <View style={{
         backgroundColor: '#F3F4F6',
@@ -287,7 +306,7 @@ const OrdersScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
       <StatusBar barStyle="light-content" backgroundColor="#6366F1" />
-      
+
       <FlatList
         data={filteredOrders}
         renderItem={renderOrderItem}
@@ -295,7 +314,7 @@ const OrdersScreen = () => {
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={renderEmptyState}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ 
+        contentContainerStyle={{
           paddingBottom: 20,
           flexGrow: 1
         }}
