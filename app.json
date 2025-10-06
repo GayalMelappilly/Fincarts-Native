@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Fincarts",
-    "slug": "my-new-app",
+    "slug": "fincarts",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
