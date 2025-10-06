@@ -43,6 +43,12 @@ interface Metrics {
   totalListings: number;
   activeListings: number;
   lastCalculatedAt: Date;
+  orderStatusCounts: {
+    pending: number,
+    processing: number,
+    shipped: number,
+    delivered: number
+  },
 }
 
 interface Settings {
@@ -130,30 +136,30 @@ export interface Business {
 }
 
 type AuthContextType = {
-    sellerData: Business | null,
-    setSellerData: React.Dispatch<React.SetStateAction<Business | null>>;
-    isLoggedIn: boolean;
-    setIsLoggedIn: (isLoggedIn: boolean) => void;
-    profileUrl: string | null;
-    setProfileUrl: (profileUrl: string | null) => void;
+  sellerData: Business | null,
+  setSellerData: React.Dispatch<React.SetStateAction<Business | null>>;
+  isLoggedIn: boolean;
+  setIsLoggedIn: (isLoggedIn: boolean) => void;
+  profileUrl: string | null;
+  setProfileUrl: (profileUrl: string | null) => void;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [sellerData, setSellerData] = useState<Business | null>(null)
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
-    const [profileUrl, setProfileUrl] = useState<string | null>(null)
+  const [sellerData, setSellerData] = useState<Business | null>(null)
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+  const [profileUrl, setProfileUrl] = useState<string | null>(null)
 
-    return (
-        <AuthContext.Provider value={{ sellerData, setSellerData, isLoggedIn, setIsLoggedIn, profileUrl, setProfileUrl }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider value={{ sellerData, setSellerData, isLoggedIn, setIsLoggedIn, profileUrl, setProfileUrl }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) throw new Error("useSellerAuth must be used within AuthProvider");
-    return context;
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useSellerAuth must be used within AuthProvider");
+  return context;
 };

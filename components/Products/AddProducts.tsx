@@ -23,6 +23,9 @@ import { useMutation } from '@tanstack/react-query';
 import { addProduct, editProduct } from '@/services/productServices';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Business, TopFishListing, useAuth } from '@/context/AuthContext';
+import { FormInput } from './FormInput';
+import { CategoryModal } from './CategoryModal';
+import { StatusModal } from './StatusModal';
 
 export type FishProductView = 'list' | 'add' | 'edit' | 'view';
 
@@ -37,150 +40,6 @@ interface Props {
   refetch: () => void;
   setLoading: (loading: boolean) => void;
 }
-
-interface FormInputProps {
-  label: string;
-  value: string;
-  onChangeText: (text: string) => void;
-  placeholder?: string;
-  keyboardType?: 'default' | 'numeric' | 'email-address' | 'phone-pad';
-  multiline?: boolean;
-  required?: boolean;
-  error?: string;
-  leftIcon?: string;
-}
-
-const FormInput: React.FC<FormInputProps> = React.memo(({
-  label,
-  value,
-  onChangeText,
-  placeholder,
-  keyboardType = 'default',
-  multiline = false,
-  required = false,
-  error,
-  leftIcon
-}) => (
-  <View className="mb-4">
-    <Text className="text-sm font-semibold text-gray-700 mb-2">
-      {label}{required && <Text className="text-red-500 ml-1">*</Text>}
-    </Text>
-    <View className="relative">
-      <TextInput
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        keyboardType={keyboardType}
-        multiline={multiline}
-        numberOfLines={multiline ? 4 : 1}
-        className={`bg-gray-50 border rounded-2xl px-4 py-4 text-gray-900 text-base ${leftIcon ? 'pl-12' : ''
-          } ${error ? 'border-red-300' : 'border-gray-200'} ${multiline ? 'h-24 text-top' : 'h-14'
-          }`}
-        placeholderTextColor="#9CA3AF"
-        autoCorrect={false}
-        autoCapitalize="none"
-      />
-      {leftIcon && (
-        <View className="absolute left-4 top-4">
-          <Ionicons name={leftIcon as any} size={20} color="#6B7280" />
-        </View>
-      )}
-    </View>
-    {error && (
-      <Text className="text-red-500 text-xs mt-1 ml-1">{error}</Text>
-    )}
-  </View>
-));
-
-const CategoryModal: React.FC<{
-  visible: boolean;
-  onClose: () => void;
-  categories: { id: number; name: string }[];
-  selectedCategory: string | null;
-  onSelectCategory: (category: string) => void;
-}> = React.memo(({ visible, onClose, categories, selectedCategory, onSelectCategory }) => (
-  <Modal visible={visible} transparent animationType="slide">
-    <View className="flex-1 bg-black/50 justify-end">
-      <View className="bg-white rounded-t-3xl max-h-96">
-        <View className="flex-row items-center justify-between p-6 border-b border-gray-100">
-          <Text className="text-xl font-bold text-gray-900">Select Category</Text>
-          <TouchableOpacity onPress={onClose}>
-            <Ionicons name="close" size={24} color="#6B7280" />
-          </TouchableOpacity>
-        </View>
-        <ScrollView className="max-h-80">
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category.id}
-              className="flex-row items-center p-4 border-b border-gray-50"
-              onPress={() => {
-                onSelectCategory(category.name);
-                onClose();
-              }}
-            >
-              <View className="bg-blue-50 p-2 rounded-full mr-3">
-                <Ionicons name="fish" size={20} color="#2563EB" />
-              </View>
-              <Text className="flex-1 text-gray-900 font-medium">{category.name}</Text>
-              {selectedCategory === category.name && (
-                <Ionicons name="checkmark-circle" size={24} color="#10B981" />
-              )}
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-    </View>
-  </Modal>
-));
-
-const StatusModal: React.FC<{
-  visible: boolean;
-  onClose: () => void;
-  selectedStatus: 'active' | 'draft' | 'out_of_stock';
-  onSelectStatus: (status: 'active' | 'draft' | 'out_of_stock') => void;
-}> = React.memo(({ visible, onClose, selectedStatus, onSelectStatus }) => {
-  const statusOptions = [
-    { value: 'active' as const, label: 'Active', color: '#10B981', icon: 'checkmark-circle' as const },
-    { value: 'draft' as const, label: 'Draft', color: '#6B7280', icon: 'document-text' as const },
-    { value: 'out_of_stock' as const, label: 'Out of Stock', color: '#EF4444', icon: 'ban' as const },
-  ];
-
-  return (
-    <Modal visible={visible} transparent animationType="slide">
-      <View className="flex-1 bg-black/50 justify-end">
-        <View className="bg-white rounded-t-3xl">
-          <View className="flex-row items-center justify-between p-6 border-b border-gray-100">
-            <Text className="text-xl font-bold text-gray-900">Listing Status</Text>
-            <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={24} color="#6B7280" />
-            </TouchableOpacity>
-          </View>
-          <View className="p-4">
-            {statusOptions.map((status) => (
-              <TouchableOpacity
-                key={status.value}
-                className="flex-row items-center p-4 rounded-xl mb-2"
-                style={{ backgroundColor: selectedStatus === status.value ? `${status.color}15` : 'transparent' }}
-                onPress={() => {
-                  onSelectStatus(status.value);
-                  onClose();
-                }}
-              >
-                <View className="p-2 rounded-full mr-4" style={{ backgroundColor: `${status.color}20` }}>
-                  <Ionicons name={status.icon as any} size={20} color={status.color} />
-                </View>
-                <Text className="flex-1 text-gray-900 font-medium">{status.label}</Text>
-                {selectedStatus === status.value && (
-                  <Ionicons name="checkmark-circle" size={24} color={status.color} />
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
-});
 
 const AddProductForm: React.FC<Props> = ({
   products,
