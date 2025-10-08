@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
-    "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native/gradle-plugin": "^0.81.1",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
@@ -20,7 +21,7 @@
     "ajv": "^8.12.0",
     "ajv-keywords": "^5.1.0",
     "cloudinary": "^2.7.0",
-    "expo": "~53.0.20",
+    "expo": "^52.0.0",
     "expo-av": "^16.0.7",
     "expo-blur": "~14.1.5",
     "expo-constants": "~17.1.7",
@@ -41,8 +42,8 @@
     "lucide-react-native": "^0.539.0",
     "nativewind": "^4.1.23",
     "ngrok": "^5.0.0-beta.2",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "react-native": "0.79.6",
     "react-native-chart-kit": "^6.12.0",
     "react-native-config": "^1.5.6",
@@ -58,7 +59,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
-    "@types/react": "~19.0.10",
+    "@types/react": "~18.3.12",
     "@types/react-native": "^0.72.8",
     "autoprefixer": "^10.4.21",
     "babel-plugin-styled-components": "^2.1.4",
@@ -72,7 +73,7 @@
     "metro-runtime": "^0.81.0",
     "prettier": "^3.6.2",
     "tailwindcss": "^3.4.17",
-    "typescript": "~5.8.3"
+    "typescript": "~5.3.3"
   },
   "private": true
 }
