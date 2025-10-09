@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "Fincarts",
+    "name": "FinCarts",
     "slug": "fincarts",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "light",
+    "owner": "gayalmelappilly",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -14,26 +15,38 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
+      "package": "com.gayalmelappilly.fincarts",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.gayalmelappilly.mynewapp"
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
-    "web": {
-      "favicon": "./assets/images/favicon.png",
-      "bundler": "metro"
-    },
-    "sdkVersion": "53.0.0",
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+    ],
     "extra": {
+      "router": {
+        "origin": false
+      },
       "eas": {
-        "projectId": "124fc400-058a-4a1e-bec8-3ca003d87b84"
+        "projectId": "6f007723-b6cf-4c5e-9b66-6fb5f1ba1065"
       }
     },
-    "owner": "gayalmelappilly"
+    "experiments": {
+      "tsconfigPaths": true
+    }
   }
 }
