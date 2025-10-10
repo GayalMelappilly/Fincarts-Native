@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "light",
-    "owner": "gayalmelappilly",
+    "owner": "gms.code",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -16,7 +16,7 @@
       "**/*"
     ],
     "android": {
-      "package": "com.gayalmelappilly.fincarts",
+      "package": "com.gms.code.fincarts",
       "icon": "./assets/images/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
@@ -43,7 +43,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "6f007723-b6cf-4c5e-9b66-6fb5f1ba1065"
+        "projectId": "124fc400-058a-4a1e-bec8-3ca003d87b84"
       }
     },
     "experiments": {
