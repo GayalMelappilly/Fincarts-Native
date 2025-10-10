@@ -237,12 +237,12 @@ const DashboardScreen = () => {
 
   // Prepare pie chart data for order status (mock data since not in API)
   const pieData = {
-    total: sellerData?.metrics.totalOrders,
+    total: sellerData?.metrics?.totalOrders,
     data: [
-    { name: 'Pending', count: sellerData?.metrics.orderStatusCounts.pending, color: '#F59E0B' },
-    { name: 'Processing', count: sellerData?.metrics.orderStatusCounts.processing, color: '#3B82F6' },
-    { name: 'Shipped', count: sellerData?.metrics.orderStatusCounts.shipped, color: '#8B5CF6' },
-    { name: 'Delivered', count: sellerData?.metrics.orderStatusCounts.delivered, color: '#10B981' }
+    { name: 'Pending', count: sellerData?.metrics?.orderStatusCounts?.pending, color: '#F59E0B' },
+    { name: 'Processing', count: sellerData?.metrics?.orderStatusCounts?.processing, color: '#3B82F6' },
+    { name: 'Shipped', count: sellerData?.metrics?.orderStatusCounts?.shipped, color: '#8B5CF6' },
+    { name: 'Delivered', count: sellerData?.metrics?.orderStatusCounts?.delivered, color: '#10B981' }
   ]
 };
 

@@ -14,6 +14,7 @@ import { loginSeller } from '@/services/authServices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export interface LoginCredentials {
     identifier: string;
@@ -60,6 +61,13 @@ export default function Login() {
             setIsLoading(false);
         }
     };
+
+    if (mutation.isPending) return (
+        <SafeAreaView className="flex-1 w-full bg-gray-50 justify-center items-center">
+            <ActivityIndicator size="large" color="#3B82F6" />
+            <Text className="mt-2 text-gray-600">Loading</Text>
+        </SafeAreaView>
+    )
 
     return (
         <ScrollView className="flex-1 bg-gray-50">

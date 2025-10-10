@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "FinCarts",
+    "name": "Fincarts",
     "slug": "fincarts",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,13 +10,14 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1f2021"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "android": {
       "package": "com.gayalmelappilly.fincarts",
+      "icon": "./assets/images/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
